@@ -48,7 +48,7 @@ void show_items();
 void create_item();
 void delete_item();
 void make_request();
-void request_3();
+void edit_item();
 void delete_by_number(task_by show_by2 = task_by::not_include, std::string value2 = "");
 void sort_items();
 void delete_by_type();
@@ -232,15 +232,15 @@ start:
 		fclose(f);
 	}
 
-	std::string menu[6] = { "Переглянути дані",  "Додати дані",  "Створити запит", "Видалити з файлу", "Сортувати дані", "Вийти з програми" };
-	char* arrows = create_arrow_keys(6);
+	std::string menu[7] = { "Переглянути дані",  "Додати дані",  "Створити запит", "Видалити з файлу", "Сортувати дані", "Редагувати дані", "Вийти з програми" };
+	char* arrows = create_arrow_keys(7);
 
 	while (true)
 	{
 		system("cls");
 		std::cout << "              ГОЛОВНЕ МЕНЮ              " << std::endl << std::endl;
 
-		int task = arrow_keys(menu, arrows, 6);
+		int task = arrow_keys(menu, arrows, 7);
 
 		if (task != -1)
 		{
@@ -264,6 +264,9 @@ start:
 				sort_items();
 				break;
 			case 5:
+				edit_item();
+				break;
+			case 6:
 				return;
 			default:
 				break;
@@ -511,7 +514,7 @@ void print_input_table(std::string place, std::string type, std::string weight, 
 	std::cout << "Тонаж: " << weight << std::endl;
 	std::cout << "Якість сировини: " << quality << std::endl;
 	std::cout << "Результат: " << std::endl;
-	std::cout << "Дата: ";
+	std::cout << "Дата: " << date;
 	textcolor(8);
 	std::cout << example_date.substr(date.length()) << std::endl;
 	textcolor(7);
@@ -548,9 +551,8 @@ void date_output(std::string date, std::string example_date)
 	gotoxy(6 + date.length(), 5);
 }
 
-std::string input_place()
+std::string input_place(std::string place = "")
 {
-	std::string place = "";
 	std::string error_message = "";
 	while (true)
 	{
@@ -573,9 +575,8 @@ std::string input_place()
 	return place;
 }
 
-std::string input_weight()
+std::string input_weight(std::string weight = "")
 {
-	std::string weight = "";
 	std::string error_message = "";
 	bool has_dot = false;
 	while (true)
@@ -594,9 +595,8 @@ std::string input_weight()
 	return weight;
 }
 
-std::string input_date(std::string example_date)
+std::string input_date(std::string example_date, std::string date = "")
 {
-	std::string date = "";
 	std::string error_message = "";
 
 	while (true)
@@ -1136,8 +1136,6 @@ void delete_by_number(task_by show_by2, std::string value2)
 		if (symbol == 13)
 		{
 			system("cls");
-			gotoxy(0, 4);
-			show_items_by(task_by::number, number, show_by2, value2);
 			if (number.length() > 0 && ask_delete())
 			{
 				delete_by(task_by::number, number, show_by2, value2);
@@ -1393,7 +1391,7 @@ void request_1_table_end()
 	SetConsoleOutputCP(1251);
 }
 
-void request_1_item_output(std::string quality_name, std::string quality_value)
+void request_1_item_output(std::string quality_name, float quality_value)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
@@ -1410,7 +1408,7 @@ void request_1_item_output(std::string quality_name, std::string quality_value)
 	vertical();
 	std::cout << std::left
 		<< std::setw(25)
-		<< quality_value;
+		<< std::to_string(quality_value).substr(0, 4) + "%";
 	vertical();
 	std::cout << std::endl;
 }
@@ -1419,9 +1417,9 @@ void request_1_output(float quality1, float quality2, float quality3)
 {
 	request_1_table_start();
 
-	request_1_item_output("Низька", std::to_string(quality1)+"%");
-	request_1_item_output("Середня", std::to_string(quality2) + "%");
-	request_1_item_output("Висока", std::to_string(quality3) + "%");
+	request_1_item_output("Низька", quality1);
+	request_1_item_output("Середня", quality2);
+	request_1_item_output("Висока", quality3);
 
 	request_1_table_end();
 }
@@ -1453,7 +1451,7 @@ void request_1()
 	}
 
 	fclose(f);
-	
+
 	float quality1 = sum1 == 0 ? 0 : sum1 / sum * 100;
 	float quality2 = sum2 == 0 ? 0 : sum2 / sum * 100;
 	float quality3 = sum3 == 0 ? 0 : sum3 / sum * 100;
@@ -1462,14 +1460,239 @@ void request_1()
 	system("pause>0");
 }
 
+std::string request_2_get_date()
+{
+	std::string date = "";
+	std::string error_message = "";
+
+	while (true)
+	{
+		std::cout << "Уведіть дату: " << place << std::endl << std::endl;
+
+		print_error_message(error_message);
+		std::cout << std::endl << std::endl;
+
+		//bool exist = request_3_show_place_variants(date);
+
+		gotoxy(21 + date.length(), 0);
+
+		char symbol = _getch();
+
+
+		if ((int)symbol == 13)
+		{
+			break;
+		}
+
+		system("cls");
+
+		error_message = "";
+	}
+
+	return date;
+}
+
 void request_2()
 {
+	system("cls");
 
+	std::string date = request_2_get_date();
+
+	//request_3_show(place);
+
+	system("pause>0");
+}
+
+void show_max_weight(int max_weight)
+{
+	SetConsoleCP(866);
+	SetConsoleOutputCP(866);
+	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
+		std::setfill('\xCD') << std::setw(24) << "\xCA" <<
+		std::setfill('\xCD') << std::setw(21) << "\xCA" <<
+		std::setfill('\xCD') << std::setw(18) << "\xCA" <<
+		std::setfill('\xCD') << std::setw(10) << "\xCA" <<
+		std::setfill('\xCD') << std::setw(26) << "\xCA" <<
+		std::setfill('\xCD') << std::setw(14) << "\xCA" << "\xB9" << std::endl;
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+	vertical();
+	std::cout
+		<< "Загальна вага: "
+		<< std::setfill(' ')
+		<< std::left
+		<< std::setw(103)
+		<< max_weight;
+	vertical();
+	std::cout << std::endl;
+}
+
+void table_end_after_weight()
+{
+	SetConsoleCP(866);
+	SetConsoleOutputCP(866);
+	std::cout << std::left << "\xC8\xCD\xCD\xCD\xCD\xCD" <<
+		std::setfill('\xCD') << std::setw(24) << "\xCD" <<
+		std::setfill('\xCD') << std::setw(21) << "\xCD" <<
+		std::setfill('\xCD') << std::setw(18) << "\xCD" <<
+		std::setfill('\xCD') << std::setw(10) << "\xCD" <<
+		std::setfill('\xCD') << std::setw(26) << "\xCD" <<
+		std::setfill('\xCD') << std::setw(14) << "\xCD" << "\xBC" << std::endl;
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+}
+
+bool check_item_place(std::string place, const std::string temp_file_name)
+{
+	FILE* f2;
+	Item item;
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (strcmp(item.place, place.c_str()) == 0)
+		{
+			fclose(f2);
+			return true;
+		}
+	}
+	fclose(f2);
+	return false;
+}
+
+std::string request_3_complete_place(std::string place)
+{
+	const std::string temp_file_name = file_name + "_temp";
+
+	FILE* f2;
+	Item item;
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (std::string(item.place).find(place) != std::string::npos)
+		{
+			fclose(f2);
+			return std::string(item.place);
+		}
+	}
+}
+
+bool request_3_show_place_variants(std::string place)
+{
+	const std::string temp_file_name = file_name + "_temp";
+
+	Item item;
+	FILE* f2;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+	fclose(f2);
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (check_item_place(std::string(item.place), temp_file_name))
+		{
+			continue;
+		}
+
+		err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+		fwrite(&item, sizeof(Item), 1, f2);
+		fclose(f2);
+	}
+
+	fclose(f);
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+	bool exist = false;
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (std::string(item.place).find(place) != std::string::npos)
+		{
+			exist = true;
+			std::cout << item.place << std::endl;
+		}
+	}
+
+	fclose(f2);
+
+	return exist;
+}
+
+std::string request_3_get_place()
+{
+	std::string place = "";
+	std::string error_message;
+
+	while (true)
+	{
+		std::cout << "Уведіть місце збору: " << place << std::endl << std::endl;
+
+		print_error_message(error_message);
+		std::cout << std::endl << std::endl;
+
+		bool exist = request_3_show_place_variants(place);
+
+		gotoxy(21 + place.length(), 0);
+		char symbol = _getch();
+
+		system("cls");
+
+		error_message = "";
+
+		if ((int)symbol == 13 && place.length() > 0)
+		{
+			if (!exist)
+			{
+				error_message = "Помилка: Такого запису не існує";
+				continue;
+			}
+			if (place[place.length() - 1] == 32 || place[place.length() - 1] == 45)
+			{
+				place = place.substr(0, place.length() - 1);
+			}
+			place += "\0";
+			break;
+		}
+		place = check_place(place, symbol, error_message);
+	}
+
+	return request_3_complete_place(place);
+}
+
+void request_3_show(std::string place)
+{
+	Item item;
+	int weight = 0;
+	int i = 0;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+
+	table_start();
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (strcmp(item.place, place.c_str()) == 0)
+		{
+			weight += item.weight;
+			show_item(item, ++i);
+		}
+	}
+
+	fclose(f);
+	show_max_weight(weight);
+	table_end_after_weight();
 }
 
 void request_3()
 {
+	system("cls");
 
+	std::string place = request_3_get_place();
+
+	request_3_show(place);
+
+	system("pause>0");
 }
 
 void request_4_table_start()
@@ -1505,7 +1728,7 @@ void request_4_table_end()
 	SetConsoleOutputCP(1251);
 }
 
-void request_4_item_output(std::string quality_name, std::string quality_value)
+void request_4_item_output(std::string quality_name, float quality_value)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
@@ -1522,7 +1745,7 @@ void request_4_item_output(std::string quality_name, std::string quality_value)
 	vertical();
 	std::cout << std::left
 		<< std::setw(25)
-		<< quality_value;
+		<< std::to_string(quality_value).substr(0, 4) + "%";
 	vertical();
 	std::cout << std::endl;
 }
@@ -1531,13 +1754,13 @@ void request_4_output(float quality1, float quality2, float quality3, float qual
 {
 	request_4_table_start();
 
-	request_4_item_output("Метали та бляшанки", std::to_string(quality1) + "%");
-	request_4_item_output("Картон та папір", std::to_string(quality2) + "%");
-	request_4_item_output("Пластик", std::to_string(quality3) + "%");
-	request_4_item_output("Скло", std::to_string(quality4) + "%");
-	request_4_item_output("Електроніка", std::to_string(quality5) + "%");
-	request_4_item_output("Олії", std::to_string(quality6) + "%");
-	request_4_item_output("Аккумулятори", std::to_string(quality7) + "%");
+	request_4_item_output("Метали та бляшанки", quality1);
+	request_4_item_output("Картон та папір", quality2);
+	request_4_item_output("Пластик", quality3);
+	request_4_item_output("Скло", quality4);
+	request_4_item_output("Електроніка", quality5);
+	request_4_item_output("Олії", quality6);
+	request_4_item_output("Аккумулятори", quality7);
 
 	request_4_table_end();
 }
@@ -1597,141 +1820,188 @@ void request_4()
 	system("pause>0");
 }
 
-void request_5_show_items(std::string place, int last_index)
-{
-	Item item;
-	int i = 1;
-	int index = 0;
-
-	rewind(f);
-	while (fread(&item, sizeof(Item), 1, f) == 1)
-	{
-		index++;
-		if (strcmp(place.c_str(), item.place) == 0)
-		{
-			show_item(item, i);
-			i++;
-		}
-		else if (index == last_index)
-		{
-			break;
-		}
-	}
-}
-
-void request_5_show_max_weight(int max_weight)
+void request_5_show_item_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
 	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCA" << "\xB9" << std::endl;
+		std::setfill('\xCD') << std::setw(24) << "\xCE" <<
+		std::setfill('\xCD') << std::setw(21) << "\xCE" <<
+		std::setfill('\xCD') << std::setw(18) << "\xCE" <<
+		std::setfill('\xCD') << std::setw(10) << "\xCE" <<
+		std::setfill('\xCD') << std::setw(26) << "\xCE" <<
+		std::setfill('\xCD') << std::setw(14) << "\xCE" << "\xB9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
+}
+
+void request_5_show_item(Item item, int i)
+{
 	vertical();
 	std::cout
-		<< "Загальна вага: "
 		<< std::setfill(' ')
 		<< std::left
-		<< std::setw(103)
-		<< max_weight;
+		<< std::setw(5)
+		<< i;
+	vertical();
+	std::cout << std::left
+		<< std::setw(23)
+		<< item.place;
+	vertical();
+	std::cout << std::left
+		<< std::setw(20)
+		<< item.type;
+	vertical();
+	std::cout << std::left
+		<< std::setw(17)
+		<< item.weight;
+	vertical();
+	std::cout << std::left
+		<< std::setw(9)
+		<< item.quality;
+	vertical();
+	std::cout << std::left
+		<< std::setw(25)
+		<< item.result;
+	vertical();
+	std::cout << std::left
+		<< std::setw(13)
+		<< item.date;
 	vertical();
 	std::cout << std::endl;
 }
 
-void file_copy(std::string new_file_name)
+void request_5_show_items(std::string place)
 {
+	Item item;
+	err = fopen_s(&f, file_name.c_str(), "rb");
+
+	int i = 0;
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (strcmp(item.place, place.c_str()) == 0)
+		{
+			i++;
+			if (i != 1)
+				request_5_show_item_start();
+
+			request_5_show_item(item, i);
+		}
+	}
+	fclose(f);
+}
+
+void request_5_table_start()
+{
+	SetConsoleCP(866);
+	SetConsoleOutputCP(866);
+	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
+		std::setfill('\xCD') << std::setw(24) << "\xCB" <<
+		std::setfill('\xCD') << std::setw(21) << "\xCB" <<
+		std::setfill('\xCD') << std::setw(18) << "\xCB" <<
+		std::setfill('\xCD') << std::setw(10) << "\xCB" <<
+		std::setfill('\xCD') << std::setw(26) << "\xCB" <<
+		std::setfill('\xCD') << std::setw(14) << "\xCB" << "\xB9" << std::endl;
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+}
+
+void request_5_show(int max_weight)
+{
+	const std::string temp_file_name = file_name + "_temp";
+
 	Item item;
 	FILE* f2;
 
-	err = fopen_s(&f2, new_file_name.c_str(), "ab+");
-	err = fopen_s(&f, file_name.c_str(), "rb");
-
-	while (fread(&item, sizeof(Item), 1, f) == 1)
-	{
-		fwrite(&item, sizeof(Item), 1, f2);
-	}
-	fclose(f);
-	fclose(f2);
-}
-
-int find_max_weight()
-{
-	Item item;
-	err = fopen_s(&f, file_name.c_str(), "rb");
-
-	int max_weight = 0;
-	int current_weight = 0;
-	std::string place = "";
-
-	while (fread(&item, sizeof(Item), 1, f) == 1)
-	{
-		if (strcmp(place.c_str(), item.place) == 0)
-		{
-			current_weight += item.weight;
-			continue;
-		}
-
-		if (current_weight > max_weight)
-		{
-			max_weight = current_weight;
-		}
-		current_weight = item.weight;
-		place = std::string(item.place);
-	}
-
-	if (current_weight > max_weight)
-	{
-		max_weight = current_weight;
-	}
-
-	fclose(f);
-
-	return max_weight;
-}
-
-int show_max_weight(int max_weight)
-{
-	Item item;
-	err = fopen_s(&f, file_name.c_str(), "rb");
-
-	int current_weight = 0;
-	int index = 0;
-	std::string place = "";
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
 
 	table_start();
 
-	while (fread(&item, sizeof(Item), 1, f) == 1)
-	{
-		index++;
-		if (strcmp(place.c_str(), item.place) == 0)
-		{
-			current_weight += item.weight;
-			continue;
-		}
+	bool start = true;
+	bool start_block = true;
 
-		if (current_weight == max_weight)
-		{
-			request_5_show_items(place, index);
-			request_5_show_max_weight(max_weight);
-		}
-		current_weight = item.weight;
-		place = std::string(item.place);
-	} 
-
-	if (current_weight == max_weight)
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
 	{
-		request_5_show_items(place, index);
-		request_5_show_max_weight(max_weight);
+		if (item.weight == max_weight)
+		{
+			if (start)
+			{
+				request_5_show_item_start();
+				start = false;
+			}
+			else if (start_block == true)
+			{
+				request_5_table_start();
+				start_block = false;
+			}
+
+			request_5_show_items(std::string(item.place));
+			show_max_weight(max_weight);
+		}
 	}
 
-	table_end();
+	table_end_after_weight();
+	fclose(f2);
+}
 
-	fclose(f);
+int request_5_find_max_weight(int length)
+{
+	const std::string temp_file_name = file_name + "_temp";
+
+	Item item;
+	Item max_item;
+	FILE* f2;
+
+	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+	fclose(f2);
+
+	for (int i = 0; i < length; i++)
+	{
+		err = fopen_s(&f, file_name.c_str(), "rb");
+
+		int j = 0;
+		bool write = true;
+
+		while (fread(&item, sizeof(Item), 1, f) == 1)
+		{
+			if (i == j++)
+			{
+				if (check_item_place(std::string(item.place), temp_file_name))
+				{
+					write = false;
+					break;
+				}
+
+				max_item = item;
+				write = true;
+				continue;
+			}
+			if (strcmp(item.place, max_item.place) == 0)
+			{
+				max_item.weight += item.weight;
+			}
+		}
+		fclose(f);
+		if (write)
+		{
+			err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+			fwrite(&max_item, sizeof(Item), 1, f2);
+			fclose(f2);
+		}
+	}
+
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+	int max_weight = -1;
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (item.weight > max_weight)
+		{
+			max_weight = item.weight;
+		}
+	}
+	fclose(f2);
 
 	return max_weight;
 }
@@ -1742,16 +2012,12 @@ void request_5()
 
 	Item item;
 	const std::string temp_file_name = file_name + "_temp";
+	int length = file_length();
 
-	file_copy(temp_file_name);
-	sort_items_by(task_by::place, sort_by::ascending);
+	int max_weight = request_5_find_max_weight(length);
+	request_5_show(max_weight);
 
-	int max_weight = find_max_weight();
-
-	show_max_weight(max_weight);
-
-	remove(file_name.c_str());
-	rename(temp_file_name.c_str(), file_name.c_str());
+	remove(temp_file_name.c_str());
 
 	system("pause>0");
 }
@@ -1796,4 +2062,207 @@ void make_request()
 	}
 
 	delete[] arrows;
+}
+
+int array_find(std::string item, std::string* arr, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		if (strcmp(arr[i].c_str(), item.c_str()))
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+std::string get_type_edit(std::string type)
+{
+	std::string type_list[7] = { "Метали та бляшанки\0",  "Картон та папір\0",  "Пластик\0", "Скло\0", "Олії\0", "Електроніка\0", "Аккумулятори\0" };
+
+	int index = array_find(type, type_list, 7);
+
+	while (true)
+	{
+		gotoxy(14, 1);
+		clear_line(1);
+		std::cout << type;
+
+		char symbol = _getch();
+		if (symbol == -32)
+		{
+			switch (_getch())
+			{
+			case 72:
+				index--;
+				if (index < 0)
+				{
+					index = 6;
+				}
+				type = type_list[index];
+				break;
+
+			case 80:
+				index++;
+				if (index > 6)
+				{
+					index = 0;
+				}
+				type = type_list[index];
+				break;
+			}
+		}
+		if (symbol == 13)
+		{
+			return type;
+		}
+	}
+}
+
+std::string get_quality_edit(std::string quality)
+{
+	std::string quality_list[3] = { "Висока\0",  "Середня\0",  "Низька\0" };
+
+	int index = array_find(quality, quality_list, 3);
+
+	while (true)
+	{
+		gotoxy(17, 3);
+		clear_line(3);
+		std::cout << quality;
+
+		char symbol = _getch();
+		if (symbol == -32)
+		{
+			switch (_getch())
+			{
+			case 72:
+				index--;
+				if (index < 0)
+				{
+					index = 2;
+				}
+				quality = quality_list[index];
+				break;
+
+			case 80:
+				index++;
+				if (index > 2)
+				{
+					index = 0;
+				}
+				quality = quality_list[index];
+				break;
+			}
+		}
+		if (symbol == 13)
+		{
+			return quality;
+		}
+	}
+}
+
+Item edit(Item item)
+{
+	std::string place = std::string(item.place);
+	std::string type = std::string(item.type);
+	std::string weight = std::to_string(item.weight);
+	std::string quality = std::string(item.quality);
+	std::string result;
+	std::string date = std::string(item.date);
+	const std::string example_date = "01.01.2020";
+
+	print_input_table(place, type, weight, quality, date, example_date);
+
+	place = input_place(place);
+
+	type = get_type_edit(type);
+	system("cls");
+	print_input_table(place, type, weight, quality, date, example_date);
+
+	weight = input_weight(weight);
+
+	quality = get_quality_edit(quality);
+	system("cls");
+	print_input_table(place, type, weight, quality, date, example_date);
+
+	gotoxy(11, 4);
+	result = get_result(type, quality);
+	std::cout << result;
+
+	date = input_date(example_date, date);
+
+	strcpy_s(item.place, place.c_str());
+	strcpy_s(item.type, type.c_str());
+	item.weight = stof(weight);
+	strcpy_s(item.quality, quality.c_str());
+	strcpy_s(item.result, result.c_str());
+	strcpy_s(item.date, date.c_str());
+
+	return item;
+}
+
+void find_edit_item(int number)
+{
+	const std::string temp_file_name = file_name + "_temp";
+
+	FILE* f2;
+	Item item;
+	int i = 0;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (++i == number)
+		{
+			item = edit(item);
+		}
+
+		fwrite(&item, sizeof(Item), 1, f2);
+	}
+
+	fclose(f);
+	fclose(f2);
+
+	remove(file_name.c_str());
+	rename(temp_file_name.c_str(), file_name.c_str());
+}
+
+void edit_item()
+{
+	system("cls");
+
+	std::string number = "";
+	std::string error_message = "";
+
+	int length = file_length();
+
+	while (true)
+	{
+		system("cls");
+		std::cout << "Уведіть номер, за яким хочете редагувати: " << number << std::endl << std::endl;
+
+		print_error_message(error_message);
+
+		std::cout << std::endl;
+		show_items_by(task_by::number, number);
+
+		gotoxy(42 + number.length(), 0);
+
+		char symbol = _getch();
+		if (symbol == 13)
+		{
+			system("cls");
+			if (number.length() > 0)
+			{
+				system("cls");
+				find_edit_item(stoi(number));
+			}
+			break;
+		}
+		number = input_number(symbol, number, length, error_message);
+	}
 }

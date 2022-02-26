@@ -86,7 +86,7 @@ void clear_line(short y)
 	gotoxy(coord.X, y);
 }
 
-int file_length()
+int file_length(task_by length_by = task_by::not_include, std::string value = "")
 {
 	Item item;
 	int length = 0;
@@ -94,7 +94,10 @@ int file_length()
 	err = fopen_s(&f, file_name.c_str(), "rb");
 	while (fread(&item, sizeof(Item), 1, f) == 1)
 	{
-		length++;
+		if (length_by == task_by::not_include || item.type == value)
+		{
+			length++;
+		}
 	}
 
 	fclose(f);
@@ -281,7 +284,7 @@ void vertical()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << "\xBA";
+	std::cout << "\xB3";
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -290,13 +293,13 @@ void table_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::endl << std::left << "\xC9\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCB" << "\xBB" << std::endl;
+	std::cout << std::endl << std::left << "\xDA\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC2" << "\xBF" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
@@ -338,13 +341,13 @@ void table_end()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC8\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCA" << "\xBC" << std::endl;
+	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC1" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -353,13 +356,13 @@ void show_item(Item item, int i)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCE" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	vertical();
@@ -1016,7 +1019,6 @@ std::string input_number(char symbol, std::string number, int length, std::strin
 {
 	if ((int)symbol == 8 && number.length() > 0)
 	{
-		error_message = "";
 		number = number.substr(0, number.length() - 1);
 	}
 	else if (!(symbol >= 48 && symbol <= 57))
@@ -1025,7 +1027,11 @@ std::string input_number(char symbol, std::string number, int length, std::strin
 	}
 	else if (stoi(number + symbol) > length)
 	{
-		error_message = "Помилка: число має бути меншим за " + std::to_string(length + 1);
+		error_message = "Помилка: Число має бути меншим за " + std::to_string(length + 1);
+	}
+	else if (number.length() == 0 && symbol == 48)
+	{
+		error_message = "Помилка: Число не може починатися з нуля";
 	}
 	else
 	{
@@ -1118,7 +1124,7 @@ void delete_by_number(task_by show_by2, std::string value2)
 	std::string number = "";
 	std::string error_message = "";
 
-	int length = file_length();
+	int length = file_length(show_by2, value2);
 
 	while (true)
 	{
@@ -1133,6 +1139,8 @@ void delete_by_number(task_by show_by2, std::string value2)
 		gotoxy(40 + number.length(), 0);
 
 		char symbol = _getch();
+		error_message = "";
+
 		if (symbol == 13)
 		{
 			system("cls");
@@ -1362,8 +1370,8 @@ void request_1_table_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::endl << std::left << "\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCB" << "\xBB" << std::endl;
+	std::cout << std::endl << std::left << "\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC2" << "\xBF" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
@@ -1385,8 +1393,8 @@ void request_1_table_end()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCA" << "\xBC" << std::endl;
+	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC1" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -1395,8 +1403,8 @@ void request_1_item_output(std::string quality_name, float quality_value)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCE" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	vertical();
@@ -1507,13 +1515,13 @@ void show_max_weight(int max_weight)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCA" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCA" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	vertical();
@@ -1531,13 +1539,13 @@ void table_end_after_weight()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC8\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCD" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCD" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCD" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCD" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCD" << "\xBC" << std::endl;
+	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC4" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC4" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC4" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC4" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC4" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -1699,8 +1707,8 @@ void request_4_table_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::endl << std::left << "\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCB" << "\xBB" << std::endl;
+	std::cout << std::endl << std::left << "\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC2" << "\xBF" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
@@ -1722,8 +1730,8 @@ void request_4_table_end()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCA" << "\xBC" << std::endl;
+	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -1732,8 +1740,8 @@ void request_4_item_output(std::string quality_name, float quality_value)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCE" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	vertical();
@@ -1824,13 +1832,13 @@ void request_5_show_item_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCE" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCE" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC5" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }
@@ -1896,13 +1904,13 @@ void request_5_table_start()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xCC\xCD\xCD\xCD\xCD\xCD" <<
-		std::setfill('\xCD') << std::setw(24) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(21) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(18) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(10) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(26) << "\xCB" <<
-		std::setfill('\xCD') << std::setw(14) << "\xCB" << "\xB9" << std::endl;
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4" <<
+		std::setfill('\xC4') << std::setw(24) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC2" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC2" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 }

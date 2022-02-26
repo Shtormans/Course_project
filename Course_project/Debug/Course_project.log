@@ -1,13 +1,13 @@
 ﻿  Course_project.cpp
   The contents of <filesystem> are available only with C++17 or later.
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(551,29): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1133,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1477,31): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1636,32): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1677,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2001,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2013,7): warning C4101: 'item': unreferenced local variable
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2253,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(980): warning C4715: 'get_result': not all control paths return a value
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1579): warning C4715: 'request_3_complete_place': not all control paths return a value
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(554,29): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1139,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1485,31): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1644,32): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1685,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2009,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2021,7): warning C4101: 'item': unreferenced local variable
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2261,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(983): warning C4715: 'get_result': not all control paths return a value
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1587): warning C4715: 'request_3_complete_place': not all control paths return a value
   Course_project.vcxproj -> C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Debug\Course_project.exe

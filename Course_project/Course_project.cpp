@@ -42,6 +42,7 @@ HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
 COORD coord = { 0, 0 };
 
 const std::string file_name = "info";
+const std::string temp_file_name = file_name + "_temp";
 
 void program_menu();
 void show_items();
@@ -215,6 +216,13 @@ int first_menu()
 void program_menu()
 {
 	Item item;
+	err = fopen_s(&f, temp_file_name.c_str(), "rb");
+	if (err == 0)
+	{
+		fclose(f);
+		remove(temp_file_name.c_str());
+	}
+
 start:
 	err = fopen_s(&f, file_name.c_str(), "rb");
 	if (err != 0 || fread(&item, sizeof(Item), 1, f) == 0)
@@ -510,13 +518,13 @@ void print_example_date(std::string date, std::string example_date)
 	textcolor(7);
 }
 
-void print_input_table(std::string place, std::string type, std::string weight, std::string quality, std::string date, std::string example_date)
+void print_input_table(std::string place, std::string type, std::string weight, std::string quality, std::string result, std::string date, std::string example_date)
 {
 	std::cout << "Місце прибуття: " << place << std::endl;
 	std::cout << "Тип сировини: " << type << std::endl;
 	std::cout << "Тонаж: " << weight << std::endl;
 	std::cout << "Якість сировини: " << quality << std::endl;
-	std::cout << "Результат: " << std::endl;
+	std::cout << "Результат: " << result << std::endl;
 	std::cout << "Дата: " << date;
 	textcolor(8);
 	std::cout << example_date.substr(date.length()) << std::endl;
@@ -635,19 +643,19 @@ Item input_item()
 
 	system("cls");
 
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	place = input_place();
 
 	type = type = get_type();
 	system("cls");
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	weight = input_weight();
 
 	quality = get_quality();
 	system("cls");
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	gotoxy(11, 4);
 	result = get_result(type, quality);
@@ -1468,60 +1476,17 @@ void request_1()
 	system("pause>0");
 }
 
-std::string request_2_get_date()
-{
-	std::string date = "";
-	std::string error_message = "";
-
-	while (true)
-	{
-		std::cout << "Уведіть дату: " << place << std::endl << std::endl;
-
-		print_error_message(error_message);
-		std::cout << std::endl << std::endl;
-
-		//bool exist = request_3_show_place_variants(date);
-
-		gotoxy(21 + date.length(), 0);
-
-		char symbol = _getch();
-
-
-		if ((int)symbol == 13)
-		{
-			break;
-		}
-
-		system("cls");
-
-		error_message = "";
-	}
-
-	return date;
-}
-
-void request_2()
-{
-	system("cls");
-
-	std::string date = request_2_get_date();
-
-	//request_3_show(place);
-
-	system("pause>0");
-}
-
 void show_max_weight(int max_weight)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
 	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4" <<
-		std::setfill('\xC4') << std::setw(24) << "\xC5" <<
-		std::setfill('\xC4') << std::setw(21) << "\xC5" <<
-		std::setfill('\xC4') << std::setw(18) << "\xC5" <<
-		std::setfill('\xC4') << std::setw(10) << "\xC5" <<
-		std::setfill('\xC4') << std::setw(26) << "\xC5" <<
-		std::setfill('\xC4') << std::setw(14) << "\xC5" << "\xB4" << std::endl;
+		std::setfill('\xC4') << std::setw(24) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(21) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(18) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(10) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(26) << "\xC1" <<
+		std::setfill('\xC4') << std::setw(14) << "\xC1" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 	vertical();
@@ -1550,6 +1515,202 @@ void table_end_after_weight()
 	SetConsoleOutputCP(1251);
 }
 
+bool request_2_show_date_variants(std::string date)
+{
+	Item item;
+	FILE* f2;
+	bool exist = false;
+
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (std::string(item.date).find(date) != std::string::npos)
+		{
+			exist = true;
+			std::cout << item.date << std::endl;
+		}
+	}
+
+	fclose(f2);
+
+	return exist;
+}
+
+std::string request_2_get_date(std::string date, char symbol, std::string& error_message)
+{
+	if ((int)symbol == 8)
+	{
+		int delete_length = 1;
+		if (date.length() == 4)
+		{
+			delete_length = 2;
+		}
+		if (date.length() == 1)
+		{
+			delete_length = 0;
+		}
+		date = date.substr(0, date.length() - delete_length);
+	}
+	else
+	{
+		if (!(symbol >= 48 && symbol <= 57))
+		{
+			error_message = "Помилка: Дата має бути записана тільки числами";
+		}
+		else if (date.length() > 7)
+		{
+			error_message = "Помилка: Кількість символів не повинна перевищувати 7 символів";
+		}
+		else
+		{
+			date += symbol;
+			if (date.length() == 3)
+			{
+				date += ".";
+			}
+		}
+	}
+
+	return date;
+}
+
+std::string request_2_complete_date(std::string date)
+{
+	FILE* f2;
+	Item item;
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (std::string(item.date).find(date) != std::string::npos)
+		{
+			fclose(f2);
+			return std::string(item.date);
+		}
+	}
+}
+
+std::string request_2_input_date()
+{
+	std::string date = ".";
+	std::string error_message = "";
+
+	while (true)
+	{
+		std::cout << "Уведіть дату: " << date << std::endl << std::endl;
+
+		print_error_message(error_message);
+		std::cout << std::endl << std::endl;
+
+		bool exist = request_2_show_date_variants(date);
+
+		gotoxy(14 + date.length(), 0);
+
+		char symbol = _getch();
+
+		system("cls");
+
+		error_message = "";
+
+		if ((int)symbol == 13)
+		{
+			if (!exist)
+			{
+				error_message = "Помилка: Такого запису не існує";
+				continue;
+			}
+
+			break;
+		}
+
+		date = request_2_get_date(date, symbol, error_message);
+	}
+
+	return request_2_complete_date(date);
+}
+
+void request_2_show(std::string date)
+{
+	Item item;
+	int weight = 0;
+	int i = 0;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+
+	table_start();
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (strcmp(std::string(item.date).substr(2, 8).c_str(), date.c_str()) == 0)
+		{
+			weight += item.weight;
+			show_item(item, ++i);
+		}
+	}
+
+	fclose(f);
+	show_max_weight(weight);
+	table_end_after_weight();
+}
+
+bool check_item_date(std::string date, const std::string temp_file_name)
+{
+	FILE* f2;
+	Item item;
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+
+	while (fread(&item, sizeof(Item), 1, f2) == 1)
+	{
+		if (strcmp(item.date, date.c_str()) == 0)
+		{
+			fclose(f2);
+			return true;
+		}
+	}
+	fclose(f2);
+	return false;
+}
+
+void request_2_add_variants()
+{
+	Item item;
+	FILE* f2;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+	fclose(f2);
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (check_item_date(std::string(item.date).substr(2, 8), temp_file_name))
+		{
+			continue;
+		}
+
+		std::string string_date = std::string(item.date);
+		strcpy_s(item.date, string_date.substr(2, 8).c_str());
+		err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+		fwrite(&item, sizeof(Item), 1, f2);
+		fclose(f2);
+	}
+
+	fclose(f);
+}
+
+void request_2()
+{
+	system("cls");
+
+	request_2_add_variants();
+	std::string date = request_2_input_date();
+
+	request_2_show(date);
+	remove(temp_file_name.c_str());
+
+	system("pause>0");
+}
+
 bool check_item_place(std::string place, const std::string temp_file_name)
 {
 	FILE* f2;
@@ -1570,8 +1731,6 @@ bool check_item_place(std::string place, const std::string temp_file_name)
 
 std::string request_3_complete_place(std::string place)
 {
-	const std::string temp_file_name = file_name + "_temp";
-
 	FILE* f2;
 	Item item;
 	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
@@ -1581,6 +1740,7 @@ std::string request_3_complete_place(std::string place)
 		if (std::string(item.place).find(place) != std::string::npos)
 		{
 			fclose(f2);
+
 			return std::string(item.place);
 		}
 	}
@@ -1588,30 +1748,11 @@ std::string request_3_complete_place(std::string place)
 
 bool request_3_show_place_variants(std::string place)
 {
-	const std::string temp_file_name = file_name + "_temp";
-
 	Item item;
 	FILE* f2;
-
-	err = fopen_s(&f, file_name.c_str(), "rb");
-	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
-	fclose(f2);
-
-	while (fread(&item, sizeof(Item), 1, f) == 1)
-	{
-		if (check_item_place(std::string(item.place), temp_file_name))
-		{
-			continue;
-		}
-
-		err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
-		fwrite(&item, sizeof(Item), 1, f2);
-		fclose(f2);
-	}
-
-	fclose(f);
-	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
 	bool exist = false;
+
+	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
 
 	while (fread(&item, sizeof(Item), 1, f2) == 1)
 	{
@@ -1692,13 +1833,39 @@ void request_3_show(std::string place)
 	table_end_after_weight();
 }
 
+void request_3_add_variants()
+{
+	Item item;
+	FILE* f2;
+
+	err = fopen_s(&f, file_name.c_str(), "rb");
+	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+	fclose(f2);
+
+	while (fread(&item, sizeof(Item), 1, f) == 1)
+	{
+		if (check_item_place(std::string(item.place), temp_file_name))
+		{
+			continue;
+		}
+
+		err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+		fwrite(&item, sizeof(Item), 1, f2);
+		fclose(f2);
+	}
+
+	fclose(f);
+}
+
 void request_3()
 {
 	system("cls");
 
+	request_3_add_variants();
 	std::string place = request_3_get_place();
 
 	request_3_show(place);
+	remove(temp_file_name.c_str());
 
 	system("pause>0");
 }
@@ -1917,8 +2084,6 @@ void request_5_table_start()
 
 void request_5_show(int max_weight)
 {
-	const std::string temp_file_name = file_name + "_temp";
-
 	Item item;
 	FILE* f2;
 
@@ -1955,8 +2120,6 @@ void request_5_show(int max_weight)
 
 int request_5_find_max_weight(int length)
 {
-	const std::string temp_file_name = file_name + "_temp";
-
 	Item item;
 	Item max_item;
 	FILE* f2;
@@ -2019,7 +2182,7 @@ void request_5()
 	system("cls");
 
 	Item item;
-	const std::string temp_file_name = file_name + "_temp";
+
 	int length = file_length();
 
 	int max_weight = request_5_find_max_weight(length);
@@ -2076,7 +2239,7 @@ int array_find(std::string item, std::string* arr, int length)
 {
 	for (int i = 0; i < length; i++)
 	{
-		if (strcmp(arr[i].c_str(), item.c_str()))
+		if (strcmp(arr[i].c_str(), item.c_str()) == 0)
 		{
 			return i;
 		}
@@ -2177,23 +2340,23 @@ Item edit(Item item)
 	std::string type = std::string(item.type);
 	std::string weight = std::to_string(item.weight);
 	std::string quality = std::string(item.quality);
-	std::string result;
+	std::string result = std::string(item.result);
 	std::string date = std::string(item.date);
 	const std::string example_date = "01.01.2020";
 
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	place = input_place(place);
 
 	type = get_type_edit(type);
 	system("cls");
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	weight = input_weight(weight);
 
 	quality = get_quality_edit(quality);
 	system("cls");
-	print_input_table(place, type, weight, quality, date, example_date);
+	print_input_table(place, type, weight, quality, result, date, example_date);
 
 	gotoxy(11, 4);
 	result = get_result(type, quality);
@@ -2213,8 +2376,6 @@ Item edit(Item item)
 
 void find_edit_item(int number)
 {
-	const std::string temp_file_name = file_name + "_temp";
-
 	FILE* f2;
 	Item item;
 	int i = 0;

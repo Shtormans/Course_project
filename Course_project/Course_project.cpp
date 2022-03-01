@@ -1204,7 +1204,7 @@ void delete_by_type()
 	{
 		error_message = "";
 		system("cls");
-		std::cout << "Тип сировини, за яким хочете видалити: " << type << std::endl << std::endl;
+		std::cout << "Тип сировини, за яким хочете видалити: " << "> " << type << std::endl << std::endl;
 
 		gotoxy(0, 2);
 		clear_line(2);
@@ -1220,6 +1220,7 @@ void delete_by_type()
 			print_error_message(error_message);
 		}
 
+		gotoxy(39 + type.length() + 2, 0);
 		char symbol = _getch();
 		if (symbol == -32)
 		{
@@ -1414,7 +1415,7 @@ void request_1_table_end()
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" 
+	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
 		<< std::setfill('\xC4') << std::setw(26) << "\xC1"
 		<< std::setfill('\xC4') << std::setw(18) << "\xC1" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
@@ -1425,8 +1426,8 @@ void request_1_item_output(std::string quality_name, float quality_value, float 
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
-	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4" 
-		<< std::setfill('\xC4') << std::setw(26) << "\xC5" 
+	std::cout << std::left << "\xC3\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
+		<< std::setfill('\xC4') << std::setw(26) << "\xC5"
 		<< std::setfill('\xC4') << std::setw(18) << "\xC5" << "\xB4" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
@@ -1730,7 +1731,7 @@ void request_2()
 	system("pause>0");
 }
 
-bool check_item_place(std::string place, const std::string temp_file_name)
+int check_item_place(std::string place, const std::string temp_file_name)
 {
 	FILE* f2;
 	Item item;
@@ -1741,22 +1742,36 @@ bool check_item_place(std::string place, const std::string temp_file_name)
 		if (strcmp(item.place, place.c_str()) == 0)
 		{
 			fclose(f2);
-			return true;
+			return 1;
+		}
+		if (std::string(item.place).find(place) != std::string::npos)
+		{
+			fclose(f2);
+			return 0;
 		}
 	}
 	fclose(f2);
-	return false;
+	return -1;
 }
 
 std::string request_3_complete_place(std::string place)
 {
 	FILE* f2;
 	Item item;
+	std::locale loc("Ukrainian");
+	std::string place_lower = "";
+	for (auto ch : place)
+		place_lower += std::tolower(ch, loc);
+
 	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
 
 	while (fread(&item, sizeof(Item), 1, f2) == 1)
 	{
-		if (std::string(item.place).find(place) != std::string::npos)
+		std::string item_place_lower = "";
+		for (auto ch : item.place)
+			item_place_lower += std::tolower(ch, loc);
+
+		if (std::string(item_place_lower).find(place_lower) != std::string::npos)
 		{
 			fclose(f2);
 
@@ -1770,12 +1785,20 @@ bool request_3_show_place_variants(std::string place)
 	Item item;
 	FILE* f2;
 	bool exist = false;
+	std::locale loc("Ukrainian");
+	std::string place_lower = "";
+	for (auto ch : place)
+		place_lower += std::tolower(ch, loc);
 
 	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
 
 	while (fread(&item, sizeof(Item), 1, f2) == 1)
 	{
-		if (std::string(item.place).find(place) != std::string::npos)
+		std::string item_place_lower = "";
+		for (auto ch : item.place)
+			item_place_lower += std::tolower(ch, loc);
+
+		if (std::string(item_place_lower).find(place_lower) != std::string::npos)
 		{
 			exist = true;
 			std::cout << item.place << std::endl;
@@ -1852,6 +1875,7 @@ void request_3_add_variants()
 {
 	Item item;
 	FILE* f2;
+	FILE* f3;
 
 	err = fopen_s(&f, file_name.c_str(), "rb");
 	err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
@@ -1859,14 +1883,30 @@ void request_3_add_variants()
 
 	while (fread(&item, sizeof(Item), 1, f) == 1)
 	{
-		if (check_item_place(std::string(item.place), temp_file_name))
+		int check = check_item_place(std::string(item.place), temp_file_name);
+		if (check == 1)
 		{
 			continue;
 		}
 
-		err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
-		fwrite(&item, sizeof(Item), 1, f2);
-		fclose(f2);
+		if (check == 0)
+		{
+			err = fopen_s(&f2, temp_file_name.c_str(), "rb");
+			err = fopen_s(&f3, (temp_file_name + "_copy").c_str(), "ab+");
+			fwrite(&item, sizeof(Item), 1, f3);
+			while (fread(&item, sizeof(Item), 1, f2) == 1)
+				fwrite(&item, sizeof(Item), 1, f3);
+			fclose(f2);
+			fclose(f3);
+			remove(temp_file_name.c_str());
+			rename((temp_file_name + "_copy").c_str(), temp_file_name.c_str());
+		}
+		else
+		{
+			err = fopen_s(&f2, temp_file_name.c_str(), "ab+");
+			fwrite(&item, sizeof(Item), 1, f2);
+			fclose(f2);
+		}
 	}
 
 	fclose(f);
@@ -1890,7 +1930,7 @@ void request_4_table_start()
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
 	std::cout << std::endl << std::left << "\xDA\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-		<< std::setfill('\xC4') << std::setw(26) << "\xC2" 
+		<< std::setfill('\xC4') << std::setw(26) << "\xC2"
 		<< std::setfill('\xC4') << std::setw(18) << "\xC2" << "\xBF" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
@@ -1918,7 +1958,7 @@ void request_4_table_end()
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
 	std::cout << std::left << "\xC0\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4\xC4"
-		<< std::setfill('\xC4') << std::setw(26) << "\xC1" 
+		<< std::setfill('\xC4') << std::setw(26) << "\xC1"
 		<< std::setfill('\xC4') << std::setw(18) << "\xC1" << "\xD9" << std::endl;
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
@@ -2284,7 +2324,7 @@ std::string get_type_edit(std::string type)
 	{
 		gotoxy(14, 1);
 		clear_line(1);
-		std::cout << type;
+		std::cout << "> " << type;
 
 		char symbol = _getch();
 		if (symbol == -32)
@@ -2327,7 +2367,7 @@ std::string get_quality_edit(std::string quality)
 	{
 		gotoxy(17, 3);
 		clear_line(3);
-		std::cout << quality;
+		std::cout << "> " << quality;
 
 		char symbol = _getch();
 		if (symbol == -32)
@@ -2375,17 +2415,20 @@ Item edit(Item item)
 	place = input_place(place);
 
 	type = get_type_edit(type);
-	system("cls");
-	print_input_table(place, type, weight, quality, result, date, example_date);
+	gotoxy(14, 1);
+	clear_line(1);
+	std::cout << type;
 
 	weight = input_weight(weight);
 
 	quality = get_quality_edit(quality);
-	system("cls");
-	print_input_table(place, type, weight, quality, result, date, example_date);
+	gotoxy(17, 3);
+	clear_line(3);
+	std::cout << quality;
 
 	gotoxy(11, 4);
 	result = get_result(type, quality);
+	clear_line(4);
 	std::cout << result;
 
 	date = input_date(example_date, date);
@@ -2518,11 +2561,11 @@ void create_instruction()
 	gotoxy(16, 4);
 	std::cout << item.place;
 	system("pause>0");
-	
+
 	system("cls");
 	std::cout << "              Інструкція з додавання даних              " << std::endl << std::endl;
 	std::cout << "Зі списку оберіть потрібний тип сировини, користуючись стрілками, та натисніть клавішу Enter" << std::endl << std::endl;
-	std::cout << "   Метали та бляшанки\n" <<  " > Картон та папір\n" << "   Пластик\n" << "   Скло\n" << "   Олії\n" << "   Електроніка\n" << "   Аккумулятори\n" << std::endl;
+	std::cout << "   Метали та бляшанки\n" << " > Картон та папір\n" << "   Пластик\n" << "   Скло\n" << "   Олії\n" << "   Електроніка\n" << "   Аккумулятори\n" << std::endl;
 	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
 	system("pause>0");
 
@@ -2587,6 +2630,7 @@ void request_instruction()
 	std::cout << "Під полем введення з'являться можливі варінти, щоб обрати перший із запропонованих варіантів натисніть клавішу Enter" << std::endl << std::endl;
 	std::cout << "Введіть дату: .09.202" << std::endl << std::endl;
 	std::cout << ".09.2021" << std::endl << std::endl;
+	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
 	gotoxy(21, 5);
 	system("pause>0");
 	system("cls");
@@ -2604,6 +2648,7 @@ void request_instruction()
 	std::cout << "Під полем введення з'являться можливі варінти, щоб обрати перший із запропонованих варіантів натисніть клавішу Enter" << std::endl << std::endl;
 	std::cout << "Введіть місце збору: Дніп" << std::endl << std::endl;
 	std::cout << "Дніпро" << std::endl << std::endl;
+	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
 	gotoxy(25, 5);
 	system("pause>0");
 	system("cls");
@@ -2658,7 +2703,7 @@ void delete_instruction()
 	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
 	gotoxy(41, 5);
 	system("pause>0");
-	
+
 	system("cls");
 	std::cout << "              Інструкція з видалення даних за номером             " << std::endl << std::endl;
 	std::cout << "Оберіть зі списку, чи точно Ви хочете видалити цей запис, користуючись стрілками, та натисніть клавішу Enter" << std::endl << std::endl;
@@ -2668,7 +2713,7 @@ void delete_instruction()
 
 	system("cls");
 	std::cout << "              Інструкція з видалення даних за типом             " << std::endl << std::endl;
-	std::cout << "Змініть тип сировини, за яким хочете видалити, користуючись стрілками, та натисніть клавішу Enter" << std::endl << std::endl;
+	std::cout << "Щоб змінити тип сировини натисніть стрілку вверх або вниз, та натисніть клавішу Enter" << std::endl << std::endl;
 	std::cout << "Тип товару, за яким хочете видалити : Картон та папір" << std::endl << std::endl;
 
 	table_start();
@@ -2726,7 +2771,7 @@ void edit_instruction()
 
 	system("cls");
 	std::cout << "              Інструкція з редагування даних             " << std::endl << std::endl;
-	std::cout << "Введіть номер запису, який хочете видалити, та натисніть клавішу Enter" << std::endl;
+	std::cout << "Введіть номер запису, який хочете редагувати, та натисніть клавішу Enter" << std::endl;
 	std::cout << "Щоб вийти з пункту редагування даних натисніть клавішу Enter" << std::endl << std::endl;
 	std::cout << "Уведіть номер, за яким хочете редагувати: 1" << std::endl << std::endl;
 
@@ -2741,43 +2786,49 @@ void edit_instruction()
 	system("cls");
 	std::cout << "              Інструкція з редагування даних              " << std::endl << std::endl;
 	std::cout << "На екрані будуть виведені поля для редагування даних" << std::endl << std::endl;
-	print_input_table("", "", "", "", "", "", example_date);
+	print_input_table(item.place, item.type, "12.5", item.quality, item.result, item.date, example_date);
 	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
 	system("pause>0");
 
 	gotoxy(0, 2);
 	clear_line(2);
 	std::cout << "Відредагуйте назву міста та натисніть клавішу Enter";
+	strcpy_s(item.place, "Харків\0");
 	gotoxy(16, 4);
 	std::cout << item.place;
 	system("pause>0");
 
-	system("cls");
-	std::cout << "              Інструкція з редагування даних              " << std::endl << std::endl;
-	std::cout << "Змініть тип сировини, користуючись стрілками, та натисніть клавішу Enter" << std::endl << std::endl;
-	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
+	gotoxy(0, 2);
+	clear_line(2);
+	std::cout << "Щоб змінити тип сировини натисніть стрілку вверх або вниз, та натисніть клавішу Enter" << std::endl << std::endl;
+	strcpy_s(item.type, "Метали та бляшанки\0");
+	gotoxy(14, 5);
+	std::cout << item.type;
 	system("pause>0");
 
-	system("cls");
-	std::cout << "              Інструкція з редагування даних              " << std::endl << std::endl;
+	gotoxy(0, 2);
+	clear_line(2);
 	std::cout << "Відредагуйте тоннаж сировини та натисніть клавішу Enter" << std::endl << std::endl;
-	print_input_table(item.place, item.type, "12.5", "", "", "", example_date);
-	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
-	gotoxy(11, 6);
+	item.weight = 10.1;
+	gotoxy(7, 6);
+	std::cout << item.weight;
 	system("pause>0");
 
-	system("cls");
-	std::cout << "              Інструкція з редагування даних              " << std::endl << std::endl;
-	std::cout << "Змініть якість сировини, користуючись стрілками, та натискніть клавішу Enter" << std::endl << std::endl;
-	std::cout << " > Висока\n" << "   Середня\n" << "   Низька\n" << std::endl;
-	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
+	gotoxy(0, 2);
+	clear_line(2);
+	std::cout << "Щоб змінити якість сировини натисніть стрілку вверх або вниз, та натискніть клавішу Enter" << std::endl << std::endl;
+	strcpy_s(item.quality, "Низька\0");
+	gotoxy(17, 7);
+	std::cout << item.quality;
 	system("pause>0");
 
-	system("cls");
-	std::cout << "              Інструкція з редагування даних              " << std::endl << std::endl;
+	gotoxy(0, 2);
+	clear_line(2);
 	std::cout << "Результат переробки обереться програмно, використовуючи тип та якість сировини" << std::endl << std::endl;
-	print_input_table(item.place, item.type, "12.5", item.quality, item.result, "", example_date);
-	std::cout << std::endl << "Для продовження натисніть на будь-яку клавішу . . .";
+	strcpy_s(item.result, get_result(item.type, item.quality).c_str());
+	gotoxy(11, 8);
+	clear_line(8);
+	std::cout << item.result;
 	system("pause>0");
 
 	gotoxy(0, 2);

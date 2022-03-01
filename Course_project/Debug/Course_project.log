@@ -2,17 +2,19 @@
   The contents of <filesystem> are available only with C++17 or later.
 C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(570,29): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
 C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1155,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1627,31): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1666,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1804,32): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1841,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2198,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2210,7): warning C4101: 'item': unreferenced local variable
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2448,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2596,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2613,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2630,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1223,35): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1628,31): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1667,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1827,32): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1864,25): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2238,21): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2250,7): warning C4101: 'item': unreferenced local variable
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2491,33): warning C4267: 'argument': conversion from 'size_t' to 'short', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2640,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2658,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2675,22): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(2812,20): warning C4305: '=': truncation from 'double' to 'float'
 C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(999): warning C4715: 'get_result': not all control paths return a value
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1611): warning C4715: 'request_2_complete_date': not all control paths return a value
-C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1766): warning C4715: 'request_3_complete_place': not all control paths return a value
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1612): warning C4715: 'request_2_complete_date': not all control paths return a value
+C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Course_project\Course_project.cpp(1781): warning C4715: 'request_3_complete_place': not all control paths return a value
   Course_project.vcxproj -> C:\Users\User\Desktop\Практические\Технологии\!COURSE PROJECT\Course_project\Debug\Course_project.exe

@@ -1214,7 +1214,7 @@ void delete_by_type()
 		item_exist = show_items_by(task_by::type, type);
 		if (!item_exist)
 		{
-			error_message = "Помилка: Даних з типом " + type + "не існує";
+			error_message = "Помилка: Даних з типом " + type + " не існує";
 			gotoxy(0, 2);
 			clear_line(2);
 			print_error_message(error_message);
@@ -1269,7 +1269,6 @@ int sort_compare(task_by check_by, sort_by order, Item item, Item min_item)
 		break;
 	case weight:
 		res = item.weight > min_item.weight;
-		res = res == 0 ? -1 : 1;
 		break;
 	case quality:
 		res = strcmp(item.quality, min_item.quality);
@@ -1278,7 +1277,7 @@ int sort_compare(task_by check_by, sort_by order, Item item, Item min_item)
 		res = strcmp(item.result, min_item.result);
 		break;
 	}
-	return order == sort_by::ascending ? res : res * -1;
+	return order == sort_by::descending ? res : res * -1;
 }
 
 void sort_items_by(task_by show_by, sort_by order)
@@ -2204,7 +2203,7 @@ int request_5_find_max_weight(int length)
 		{
 			if (i == j++)
 			{
-				if (check_item_place(std::string(item.place), temp_file_name))
+				if (check_item_place(std::string(item.place), temp_file_name) == 1)
 				{
 					write = false;
 					break;

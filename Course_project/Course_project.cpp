@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <conio.h>
 #include <windows.h>
@@ -1495,7 +1495,7 @@ void request_1()
 	system("pause>0");
 }
 
-void show_max_weight(int max_weight)
+void show_max_weight(float max_weight)
 {
 	SetConsoleCP(866);
 	SetConsoleOutputCP(866);
@@ -1652,7 +1652,7 @@ std::string request_2_input_date()
 void request_2_show(std::string date)
 {
 	Item item;
-	int weight = 0;
+	float weight = 0;
 	int i = 0;
 
 	err = fopen_s(&f, file_name.c_str(), "rb");
@@ -1730,7 +1730,7 @@ void request_2()
 	system("pause>0");
 }
 
-int check_item_place(std::string place, const std::string temp_file_name)
+int check_item_place(std::string place, const std::string temp_file_name, bool find_part = true)
 {
 	FILE* f2;
 	Item item;
@@ -1743,7 +1743,7 @@ int check_item_place(std::string place, const std::string temp_file_name)
 			fclose(f2);
 			return 1;
 		}
-		if (std::string(item.place).find(place) != std::string::npos)
+		if (std::string(item.place).find(place) != std::string::npos && find_part)
 		{
 			fclose(f2);
 			return 0;
@@ -1849,7 +1849,7 @@ std::string request_3_get_place()
 void request_3_show(std::string place)
 {
 	Item item;
-	int weight = 0;
+	float weight = 0;
 	int i = 0;
 
 	err = fopen_s(&f, file_name.c_str(), "rb");
@@ -2147,7 +2147,7 @@ void request_5_table_start()
 	SetConsoleOutputCP(1251);
 }
 
-void request_5_show(int max_weight)
+void request_5_show(float max_weight)
 {
 	Item item;
 	FILE* f2;
@@ -2183,7 +2183,7 @@ void request_5_show(int max_weight)
 	fclose(f2);
 }
 
-int request_5_find_max_weight(int length)
+float request_5_find_max_weight(int length)
 {
 	Item item;
 	Item max_item;
@@ -2203,7 +2203,7 @@ int request_5_find_max_weight(int length)
 		{
 			if (i == j++)
 			{
-				if (check_item_place(std::string(item.place), temp_file_name) == 1)
+				if (check_item_place(std::string(item.place), temp_file_name, false) == 1)
 				{
 					write = false;
 					break;
@@ -2228,7 +2228,7 @@ int request_5_find_max_weight(int length)
 	}
 
 	err = fopen_s(&f2, temp_file_name.c_str(), "rb");
-	int max_weight = -1;
+	float max_weight = -1;
 
 	while (fread(&item, sizeof(Item), 1, f2) == 1)
 	{
@@ -2250,7 +2250,7 @@ void request_5()
 
 	int length = file_length();
 
-	int max_weight = request_5_find_max_weight(length);
+	float max_weight = request_5_find_max_weight(length);
 	request_5_show(max_weight);
 
 	remove(temp_file_name.c_str());
